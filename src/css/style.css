@@ -1,0 +1,68 @@
+table {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #111111;
+    width: 100%;
+    background-color: #f2f2f2;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: center;
+    font-weight: normal;
+    height: 50px;
+}
+
+tr:nth-child(even) {
+    background-color: #FFFFFF;
+}
+
+#porcentagem_total {
+    color: red;
+    font-weight: bold;
+}
+
+#nome_ativo {
+    width: 60%;
+    text-align: left;
+}
+
+#excluir {
+    font-weight: 1000;
+    color: blue;
+}
+
+#restante {
+    font-size: 12px;
+}
+
+.right-border {
+    border-right: 1px solid #dddddd;
+}
+
+input {
+    text-align: right;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+button {
+    text-align: left;
+    width: 100%;
+    border: 1px solid #d3e4ff;
+    border-radius: 5px;
+    background-color: #d3e4ff;
+    padding: 3px;
+    color: #307af2;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+button:hover{
+    background-color: #bbd2f7;
+}
+
+body {
+
+}
