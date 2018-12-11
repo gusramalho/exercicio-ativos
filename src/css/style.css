@@ -40,11 +40,12 @@ tr:nth-child(even) {
     border-right: 1px solid #dddddd;
 }
 
-input {
+input[type=number] {
     text-align: right;
     border: 1px solid #dddddd;
     border-radius: 5px;
     padding: 3px;
+    width: 100px;
 }
 
 button {
