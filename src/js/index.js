@@ -1,4 +1,4 @@
-class Ativo {
+class  Ativo {
 	constructor(id, name, value) {
 		this.id = id;
 		this.name = name;
@@ -34,7 +34,19 @@ const manager = {
 
 	percentage : function(id){
 		let ativo = this.ativos.find(ativo => ativo.id == id);
-		return ativo.value / this.total() * 100; 
+		return ativo.value / this.capital * 100; 
+	},
+
+	resto: function(){
+		return this.capital - this.total();
+	},
+
+	totalPercentage : function(){
+		let percent = 0;
+		this.ativos.map(a => {
+			percent += this.percentage(a.id);
+		});
+		return  percent;
 	}
 }
 
@@ -63,6 +75,7 @@ function randomValue(){
 function randomAtivo(){			
 	return new Ativo(0, randomName(), randomValue());
 }
+
 
 
 function createAtivoElement(ativo){
@@ -139,10 +152,22 @@ function main(){
 
 		document.querySelector('#value' + ativo.id).addEventListener("change", e => {
 			
-			const id = e.target.id.split('value')[1];
-			manager.update(id, e.target.value);
-			const restante = document.querySelector("#total").value - manager.total();
-			document.querySelector('#restante').innerHTML = `(Restante: ${restante.toFixed(2)})`;	
+			const { id } = ativo;
+			manager.update(id, parseFloat(e.target.value));
+			
+			document.querySelector('#restante').innerHTML = `(Restante: ${manager.resto().toFixed(2)})`;	
+			document.querySelector("#percent" + id).value = manager.percentage(id).toFixed(2);
+			document.querySelector("#porcentagem_total").innerHTML = manager.totalPercentage().toFixed(2)+ " %";
+		
+		});
+
+
+		document.querySelector("#percent" + ativo.id).addEventListener("change", e => {
+			const val = e.target.value ;
+			const novoVal =  val/100 * manager.capital;
+			document.querySelector("#value"+ ativo.id).value = novoVal;
+			manager.update(ativo.id, novoVal);
+			document.querySelector("#porcentagem_total").innerHTML = manager.totalPercentage().toFixed(2)+ " %";
 
 		});
 
@@ -151,27 +176,66 @@ function main(){
 			manager.remove(id);
 			const tr = document.querySelector("#tr"+ativo.id); 
 			document.querySelector("#table_ativos").removeChild(tr);
-			//atualizar total
-		})
+			
+			document.querySelector("#restante").innerHTML = manager.resto();
+		
+		});
  
 	});
 
 
+function updateHeader(){
+
+	document.querySelector("#total").value = manger.capital;
+	document.querySelector("#restante").innerHTML = `(Restante: ${manager.resto().toFixed(2)})`;
+	document.querySelector("#porcentagem_total").innerHTML = manager.totalPercentage().toFixed(2)+ " %";
+}
+
+function deleteEvent(e){
+	
+}
 
 	document.querySelector("#btnAdd").addEventListener("click", () => {
 
 		const ativo = new Ativo(0, randomName(), 0);
 		manager.add(ativo);
 		document.querySelector("#table_ativos").appendChild(createAtivoElement(ativo));
-		alert(ativo.id);
 		document.querySelector('#percent' + ativo.id).value = manager.percentage(ativo.id).toFixed(2);
+
+		document.querySelector('#value' + ativo.id).addEventListener("change", e => {
+			const { id } = ativo;
+			manager.update(id, parseFloat(e.target.value));
+			
+			document.querySelector('#restante').innerHTML = `(Restante: ${manager.resto().toFixed(2)})`;	
+			document.querySelector("#percent" + id).value = manager.percentage(id).toFixed(2);
+			document.querySelector("#porcentagem_total").innerHTML = manager.totalPercentage().toFixed(2)+ " %";
+		});
+
+		document.querySelector("#percent" + ativo.id).addEventListener("change", e => {
+			const val = e.target.value ;
+			const novoVal =  val/100 * manager.capital;
+			document.querySelector("#value"+ ativo.id).value = novoVal;
+			manager.update(ativo.id, novoVal);
+			document.querySelector("#porcentagem_total").innerHTML = manager.totalPercentage().toFixed(2)+ " %";
+
+		});
+		
+
+		document.querySelector("#excluir" + ativo.id).addEventListener("click", e => {
+			const { id } = ativo;
+			manager.remove(id);
+			const tr = document.querySelector("#tr"+ativo.id); 
+			document.querySelector("#table_ativos").removeChild(tr);
+			updateHeader();
+		
+		});
 	});
 
 
 	const inputTotal = document.querySelector('#total');
 
 	inputTotal.addEventListener("change", event => { 
-			let restante = event.target.value - total;
+			let restante = manager.resto();
 			document.querySelector('#restante').innerHTML = `(Restante: ${restante.toFixed(2)})`;	
 	});
 
