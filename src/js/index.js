@@ -9,6 +9,7 @@ class Ativo {
 const manager = {
 	currentId : 0,
 	ativos : [],
+	capital : 0,
 
 	total : function(){
 		//return this.ativos.reduce((total, ativo) => total + ativo.value);
@@ -29,6 +30,11 @@ const manager = {
 
 	update : function(id, value){
 		this.ativos = this.ativos.map(ativo => (ativo.id == id) ? {...ativo, value} : ativo);
+	},
+
+	percentage : function(id){
+		let ativo = this.ativos.find(ativo => ativo.id == id);
+		return ativo.value / this.total() * 100; 
 	}
 }
 
@@ -54,16 +60,15 @@ function randomValue(){
 }
 
 
-function generateRandomAtivo(){
-				
+function randomAtivo(){			
 	return new Ativo(0, randomName(), randomValue());
-
 }
 
 
 function createAtivoElement(ativo){
 	
 	let tr = document.createElement('tr');
+	tr.setAttribute('id', 'tr' + ativo.id);
 
 	let checkBox = document.createElement("input");
 	checkBox.setAttribute('type', 'checkbox');
@@ -94,7 +99,7 @@ function createAtivoElement(ativo){
 	tdPercent.appendChild(inputPercent);
 
 	let btnExcluir = document.createElement('button');
-	btnExcluir.setAttribute('id', 'exluir' + ativo.id);
+	btnExcluir.setAttribute('id', 'excluir' + ativo.id);
 	btnExcluir.appendChild(document.createTextNode("X"));
 
 	let tdExcluir = document.createElement('td');
@@ -112,45 +117,54 @@ function createAtivoElement(ativo){
 
 
 
-const changeTotalEvent = () => {
-
-}
-
-
 function main(){
 
 	for (let i=0; i<3; i++){
-		manager.add(generateRandomAtivo());
+		manager.add(randomAtivo());
 		console.log(manager.ativos);
 	}
 
 	let total = manager.total();
+
 	document.querySelector('#total').value =  total;
 	document.querySelector('#porcentagem_total').innerHTML = "100 %";
 	document.querySelector('#restante').innerHTML = '(Restante: 0,00)';
 	document.querySelector('#qtsAtivos').innerHTML = `(${manager.ativos.length})`;
 
+	manager.capital = total;
 
 	manager.ativos.map(ativo => { 
 		document.querySelector('#table_ativos').appendChild(createAtivoElement(ativo));
-		document.querySelector('#percent' + ativo.id).value = (ativo.value / total * 100).toFixed(2);
+		document.querySelector('#percent' + ativo.id).value = manager.percentage(ativo.id).toFixed(2);
 
 		document.querySelector('#value' + ativo.id).addEventListener("change", e => {
+			
 			const id = e.target.id.split('value')[1];
 			manager.update(id, e.target.value);
-			let restante = document.querySelector("#total").value - manager.total();
+			const restante = document.querySelector("#total").value - manager.total();
 			document.querySelector('#restante').innerHTML = `(Restante: ${restante.toFixed(2)})`;	
 
+		});
+
+		document.querySelector("#excluir" + ativo.id).addEventListener("click", e => {
+			const id = e.target.id.split('excluir')[1];
+			manager.remove(id);
+			const tr = document.querySelector("#tr"+ativo.id); 
+			document.querySelector("#table_ativos").removeChild(tr);
+			//atualizar total
 		})
  
 	});
+
+
 
 	document.querySelector("#btnAdd").addEventListener("click", () => {
 
 		const ativo = new Ativo(0, randomName(), 0);
 		manager.add(ativo);
 		document.querySelector("#table_ativos").appendChild(createAtivoElement(ativo));
-		document.querySelector('#percent' + ativo.id).value = (ativo.value / manager.total() * 100).toFixed(2);
+		alert(ativo.id);
+		document.querySelector('#percent' + ativo.id).value = manager.percentage(ativo.id).toFixed(2);
 	});
 
 
